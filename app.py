@@ -1,14 +1,15 @@
+import streamlit as st
+
+st.set_page_config(page_title="Working Fix", layout="wide")
+
+st.title("✅ Streamlit is Working")
+
+st.write("If you see this, the app is fixed.")
+
 st.markdown("---")
 
-st.title("⚖️ LSEPI Considerations")
+st.title("LSEPI Considerations")
 
-st.write(
-    "Ethical: This dashboard uses synthetic data for educational purposes only. "
-    "A risk is that users may interpret outputs as real business results. "
-    "To mitigate this, the dataset is clearly labelled as simulated."
-)
+st.write("Ethical: This dashboard uses synthetic data for learning only.")
 
-st.write(
-    "Professional: Users may misinterpret charts or assume causation from correlations. "
-    "To reduce this risk, explanations and limitations are included in the dashboard."
-)
+st.write("Professional: Results are for analysis only and may not represent real-world causation.")
