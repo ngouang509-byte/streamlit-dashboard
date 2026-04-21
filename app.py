@@ -1,17 +1,16 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import re
 
-st.set_page_config(page_title="Business Dashboard Task 4", layout="wide")
+st.set_page_config(page_title="Business Dashboard Task 5", layout="wide")
 
-st.title("📊 Business Dashboard (Task 4 - Regex Feature Engineering)")
+st.title("📊 Business Dashboard (Task 5 - Descriptive Statistics)")
 
 # -------------------------
 # DATA
 # -------------------------
 df = pd.DataFrame({
-    "Category": np.random.choice(["Tech-Gadgets", "Tech-Software", "Furniture-Chairs", "Furniture-Tables", "Office-Paper", "Office-Staples"], 400),
+    "Category": np.random.choice(["Tech", "Furniture", "Office"], 400),
     "Region": np.random.choice(["London", "North", "South", "Midlands"], 400),
     "Sales": np.random.randint(50, 1000, 400),
     "Profit": np.random.randint(10, 400, 400)
@@ -20,81 +19,107 @@ df = pd.DataFrame({
 df["Profit Margin %"] = (df["Profit"] / df["Sales"]) * 100
 
 # -------------------------
-# REGEX FEATURE ENGINEERING (BASIC REQUIREMENT)
+# FILTERS (so stats respond to filters - ADVANCED REQUIREMENT)
 # -------------------------
-def map_category(cat):
-    if re.search(r"Tech", str(cat)):
-        return "Technology"
-    elif re.search(r"Furniture", str(cat)):
-        return "Furniture"
-    elif re.search(r"Office", str(cat)):
-        return "Office Supplies"
-    else:
-        return "Other"
+st.sidebar.header("Filters")
 
-df["Category_Group"] = df["Category"].apply(map_category)
+category_filter = st.sidebar.multiselect(
+    "Category",
+    df["Category"].unique(),
+    default=list(df["Category"].unique())
+)
+
+region_filter = st.sidebar.multiselect(
+    "Region",
+    df["Region"].unique(),
+    default=list(df["Region"].unique())
+)
+
+filtered_df = df[
+    (df["Category"].isin(category_filter)) &
+    (df["Region"].isin(region_filter))
+]
 
 # -------------------------
-# INTERMEDIATE: MAPPING TABLE
+# BASIC DESCRIPTIVE STATISTICS
 # -------------------------
-st.header("📌 Regex Mapping Example")
+st.header("📌 Summary Statistics")
 
-mapping_df = df[["Category", "Category_Group"]].drop_duplicates()
+st.write("### Sales Summary")
+st.write(filtered_df["Sales"].describe())
 
-st.write("Original → Transformed Mapping")
-st.dataframe(mapping_df)
+st.write("### Profit Summary")
+st.write(filtered_df["Profit"].describe())
 
-# frequency validation
-st.write("### Category Group Distribution")
-st.bar_chart(df["Category_Group"].value_counts())
+# custom stats (mean, median, min, max, IQR)
+q1 = filtered_df["Sales"].quantile(0.25)
+q3 = filtered_df["Sales"].quantile(0.75)
+iqr = q3 - q1
+
+stats_df = pd.DataFrame({
+    "Metric": ["Mean", "Median", "Min", "Max", "IQR"],
+    "Sales": [
+        filtered_df["Sales"].mean(),
+        filtered_df["Sales"].median(),
+        filtered_df["Sales"].min(),
+        filtered_df["Sales"].max(),
+        iqr
+    ]
+})
+
+st.dataframe(stats_df)
 
 st.divider()
 
 # -------------------------
-# FILTER (ADVANCED REQUIREMENT)
+# GROUPED STATS (INTERMEDIATE)
 # -------------------------
-st.sidebar.header("Regex Feature Filter")
+st.header("📊 Grouped Descriptive Statistics")
 
-group_filter = st.sidebar.multiselect(
-    "Select Category Group",
-    df["Category_Group"].unique(),
-    default=list(df["Category_Group"].unique())
-)
+group_stats = filtered_df.groupby("Category")[["Sales", "Profit"]].agg([
+    "mean", "median", "min", "max"
+])
 
-filtered_df = df[df["Category_Group"].isin(group_filter)]
+st.dataframe(group_stats)
+
+st.divider()
 
 # -------------------------
-# KPIs (USES REGEX FEATURE)
+# DISTRIBUTION VIEWS (ADVANCED)
 # -------------------------
-st.header("📊 KPIs (Regex-based Analysis)")
+st.header("📈 Distribution Analysis")
+
+st.subheader("Sales Distribution (Histogram)")
+st.bar_chart(filtered_df["Sales"].value_counts().sort_index())
+
+st.subheader("Profit Distribution (Box View Approximation)")
+st.bar_chart(filtered_df["Profit"].value_counts().sort_index())
+
+st.divider()
+
+# -------------------------
+# KPI SUMMARY
+# -------------------------
+st.header("📌 KPI Overview")
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric("Sales", f"£{filtered_df['Sales'].sum():,.0f}")
-col2.metric("Profit", f"£{filtered_df['Profit'].sum():,.0f}")
+col1.metric("Avg Sales", round(filtered_df["Sales"].mean(), 2))
+col2.metric("Avg Profit", round(filtered_df["Profit"].mean(), 2))
 col3.metric("Avg Margin %", round(filtered_df["Profit Margin %"].mean(), 2))
 
-st.divider()
-
 # -------------------------
-# CHARTS (USES REGEX FEATURE)
+# INTERPRETATION (ADVANCED REQUIREMENT)
 # -------------------------
-st.header("📊 Analysis Using Regex Feature")
+st.markdown("### 📌 Interpretation")
 
-st.subheader("Sales by Category Group")
-st.bar_chart(filtered_df.groupby("Category_Group")["Sales"].sum())
+st.write("""
+These statistics describe central tendency (mean, median), spread (range, IQR), and distribution patterns.
 
-st.subheader("Profit by Category Group")
-st.bar_chart(filtered_df.groupby("Category_Group")["Profit"].sum())
+However:
+- They do NOT explain causation.
+- They are sensitive to outliers.
+- They do not capture time-based or external factors affecting performance.
 
-st.subheader("Full Dataset")
-st.dataframe(filtered_df)
-
-# -------------------------
-# INSIGHT
-# -------------------------
-st.markdown("### 📌 Insight")
-st.write(
-    "Regex was used to group detailed product categories into broader business segments. "
-    "This transformation improves analysis clarity and enables grouped filtering, KPI calculation, and comparative insights."
-)
+Grouped statistics help compare categories, but do not imply one category causes higher performance.
+""")
