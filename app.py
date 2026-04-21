@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,71 +5,93 @@ import numpy as np
 # -------------------------
 # PAGE SETUP
 # -------------------------
-st.set_page_config(page_title="Business Dashboard", layout="wide")
+st.set_page_config(page_title="Business Dashboard - Preprocessing", layout="wide")
 
-st.title("📊 Executive Summary & Drill-Down Dashboard")
+st.title("📊 Dashboard with Data Preprocessing (Task 2)")
 
 # -------------------------
-# SAMPLE DATA
+# RAW DATA (simulated)
 # -------------------------
 df = pd.DataFrame({
-    "Category": np.random.choice(["Technology", "Furniture", "Office Supplies"], 300),
-    "Region": np.random.choice(["London", "North", "South", "Midlands"], 300),
-    "Sales": np.random.randint(50, 1000, 300),
-    "Profit": np.random.randint(10, 400, 300)
+    "Category": np.random.choice(["Technology", "Furniture", "Office Supplies", None], 300),
+    "Region": np.random.choice(["London", "North", "South", None], 300),
+    "Sales": np.append(np.random.randint(50, 1000, 295), [None]*5),
+    "Profit": np.append(np.random.randint(10, 400, 295), [None]*5)
 })
 
 # -------------------------
-# SIDEBAR FILTERS
+# PREPROCESSING OPTIONS (ADVANCED REQUIREMENT)
 # -------------------------
-st.sidebar.header("Filters")
+st.sidebar.header("Preprocessing Options")
 
-category = st.sidebar.selectbox("Select Category", ["All"] + list(df["Category"].unique()))
-region = st.sidebar.selectbox("Select Region", ["All"] + list(df["Region"].unique()))
-
-filtered_df = df.copy()
-
-if category != "All":
-    filtered_df = filtered_df[filtered_df["Category"] == category]
-
-if region != "All":
-    filtered_df = filtered_df[filtered_df["Region"] == region]
+include_missing = st.sidebar.checkbox("Include Missing Values", value=False)
+remove_outliers = st.sidebar.checkbox("Remove Outliers", value=True)
 
 # -------------------------
-# EXECUTIVE SUMMARY
+# BASIC CLEANING
 # -------------------------
-st.header("Executive Summary")
 
-total_sales = filtered_df["Sales"].sum()
-total_profit = filtered_df["Profit"].sum()
-avg_sales = filtered_df["Sales"].mean()
+# Handle missing values
+if not include_missing:
+    df = df.dropna()
+else:
+    df["Category"] = df["Category"].fillna("Unknown")
+    df["Region"] = df["Region"].fillna("Unknown")
+    df["Sales"] = df["Sales"].fillna(df["Sales"].mean())
+    df["Profit"] = df["Profit"].fillna(df["Profit"].mean())
+
+# Ensure correct data types
+df["Sales"] = df["Sales"].astype(float)
+df["Profit"] = df["Profit"].astype(float)
+
+# -------------------------
+# DERIVED COLUMN (INTERMEDIATE REQUIREMENT)
+# -------------------------
+df["Profit Margin"] = (df["Profit"] / df["Sales"]) * 100
+
+# -------------------------
+# OUTLIER HANDLING (ADVANCED)
+# -------------------------
+if remove_outliers:
+    q_low = df["Sales"].quantile(0.05)
+    q_high = df["Sales"].quantile(0.95)
+    df = df[(df["Sales"] >= q_low) & (df["Sales"] <= q_high)]
+
+# -------------------------
+# DATA QUALITY SUMMARY
+# -------------------------
+st.header("📌 Data Quality Summary")
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric("Total Sales", f"£{total_sales:,.0f}")
-col2.metric("Total Profit", f"£{total_profit:,.0f}")
-col3.metric("Average Sales", f"£{avg_sales:,.0f}")
+col1.metric("Rows", len(df))
+col2.metric("Missing Values", df.isnull().sum().sum())
+col3.metric("Avg Profit Margin (%)", round(df["Profit Margin"].mean(), 2))
+
+st.write("### Category Frequencies")
+st.bar_chart(df["Category"].value_counts())
 
 st.divider()
 
 # -------------------------
-# DRILL-DOWN ANALYSIS
+# PREPROCESSED DASHBOARD
 # -------------------------
-st.header("Drill-Down Analysis")
+st.header("📊 Processed Data Dashboard")
 
 st.subheader("Sales by Category")
-st.bar_chart(filtered_df.groupby("Category")["Sales"].sum())
+st.bar_chart(df.groupby("Category")["Sales"].sum())
 
 st.subheader("Profit by Region")
-st.bar_chart(filtered_df.groupby("Region")["Profit"].sum())
+st.bar_chart(df.groupby("Region")["Profit"].sum())
 
-st.subheader("Data Table")
-st.dataframe(filtered_df)
+st.subheader("Dataset Preview")
+st.dataframe(df)
 
 # -------------------------
 # INSIGHT
 # -------------------------
-st.markdown("### 📌 Business Insight")
+st.markdown("### 📌 Insight")
 st.write(
-    "Sales and profit vary across categories and regions, highlighting opportunities for targeted business strategies and performance improvement."
+    "Data preprocessing affects the final KPIs and visualisations. "
+    "Handling missing values and removing outliers improves reliability of business insights."
 )
