@@ -7,45 +7,48 @@ import matplotlib.pyplot as plt
 # -------------------------
 st.title("Student Dashboard")
 
-st.markdown("---")
+# -------------------------
+# INTRO
+# -------------------------
+st.header("Overview")
+st.write("This dashboard presents analysis and visualisations based on the dataset.")
 
 # -------------------------
-# SAMPLE SECTION (replace with your data)
+# SAMPLE DATA + CHART
+# (Replace this with your real dataset)
 # -------------------------
-st.header("Main Analysis")
-
-st.write("This is where your analysis and charts will go.")
-
-# Example chart (replace with your own)
 data = pd.DataFrame({
-    "Category": ["A", "B", "C"],
-    "Values": [10, 20, 15]
+    "Category": ["A", "B", "C", "D"],
+    "Values": [12, 19, 8, 15]
 })
+
+st.header("Visualisation")
 
 fig, ax = plt.subplots()
 ax.bar(data["Category"], data["Values"])
+ax.set_title("Sample Bar Chart")
+ax.set_xlabel("Category")
+ax.set_ylabel("Values")
 
 st.pyplot(fig)
-
-st.markdown("---")
 
 # -------------------------
 # LSEPI SECTION (TASK 6)
 # -------------------------
-st.markdown("### LSEPI Considerations")
+st.header("LSEPI Considerations")
 
-st.markdown("""
-**Ethical:**  
-There is a risk that users may misinterpret trends and assume relationships imply causation. The dataset may oversimplify complex real-world behaviour.
-
-**Mitigation:**  
-Clear notes were added explaining that the visualisations show correlations only and should not be interpreted as causal relationships.
-
----
-
-**Professional:**  
-Users may misunderstand outputs due to limited context or incorrect use of filters, leading to inconsistent conclusions.
-
-**Mitigation:**  
-Labels and explanatory notes were included to explain how filters affect results and how to interpret the charts correctly.
+st.subheader("Ethical")
+st.write("""
+There is a risk that users may misinterpret trends and assume relationships imply causation. 
+The dataset may oversimplify complex real-world behaviour, leading to misleading conclusions.
 """)
+
+st.write("**Mitigation:** Clear notes were added stating that the visualisations show correlations only, not causation.")
+
+st.subheader("Professional")
+st.write("""
+Users may misinterpret outputs due to limited context or misunderstanding of filter effects. 
+Different selections can lead to inconsistent interpretations across users.
+""")
+
+st.write("**Mitigation:** Labels and explanatory notes were included to explain how filters affect results and interpretation.")
