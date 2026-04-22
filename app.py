@@ -1,49 +1,21 @@
-import streamlit as st
-import pandas as pd
-
-# -------------------------
-# TITLE
-# -------------------------
-st.title("Student Dashboard")
-
-# -------------------------
-# INTRO
-# -------------------------
-st.header("Overview")
-st.write("This dashboard presents analysis and visualisations based on the dataset.")
-
-# -------------------------
-# SAMPLE DATA (replace later with your real dataset)
-# -------------------------
-data = pd.DataFrame({
-    "Category": ["A", "B", "C", "D"],
-    "Values": [12, 19, 8, 15]
-})
-
-# -------------------------
-# VISUALISATION (SAFE - NO MATPLOTLIB)
-# -------------------------
-st.header("Visualisation")
-
-st.bar_chart(data.set_index("Category"))
-
-# -------------------------
-# LSEPI SECTION (TASK 6 - DONE PROPERLY)
-# -------------------------
 st.header("LSEPI Considerations")
 
 st.subheader("Ethical")
 st.write("""
-There is a risk that users may misinterpret patterns in the data and assume relationships imply causation. 
-The dataset simplifies real-world behaviour, which may lead to misleading interpretations.
+There is a risk that users may misinterpret patterns in the dataset as causal relationships when they are only descriptive correlations. 
+This could lead to incorrect assumptions or overconfidence in the findings. In addition, simplified visualisations may not fully represent real-world complexity.
 """)
 
-st.write("**Mitigation:** Added clear notes stating that the visualisations show patterns and correlations only, not causation.")
+st.write("""
+Mitigation: The dashboard explicitly labels all outputs as descriptive analysis only, and explanatory notes are included to remind users that no causal inference should be made from the visualisations.
+""")
 
 st.subheader("Professional")
 st.write("""
-Users may interpret results differently depending on how they apply filters or view the data. 
-This can lead to inconsistent conclusions if context is not considered.
+Users may interpret results differently depending on how filters are applied or how data subsets are selected. 
+This can result in inconsistent conclusions if users lack understanding of how the dashboard processes data.
 """)
 
-st.write("**Mitigation:** Labels and explanations were added to clarify how data should be interpreted.")
+st.write("""
+Mitigation: Clear labels, structured layout, and filter explanations are provided to ensure users understand how interactions affect outputs and to support consistent interpretation of results.
+""")
