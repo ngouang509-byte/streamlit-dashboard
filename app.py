@@ -7,26 +7,25 @@ import matplotlib.pyplot as plt
 # -------------------------
 st.title("Student Dashboard")
 
-# -------------------------
-# INTRO
-# -------------------------
 st.header("Overview")
 st.write("This dashboard presents analysis and visualisations based on the dataset.")
 
 # -------------------------
-# SAMPLE DATA + CHART
-# (Replace this with your real dataset)
+# SAMPLE DATA (replace with your real dataset)
 # -------------------------
 data = pd.DataFrame({
     "Category": ["A", "B", "C", "D"],
     "Values": [12, 19, 8, 15]
 })
 
+# -------------------------
+# VISUALISATION
+# -------------------------
 st.header("Visualisation")
 
 fig, ax = plt.subplots()
 ax.bar(data["Category"], data["Values"])
-ax.set_title("Sample Bar Chart")
+ax.set_title("Example Bar Chart")
 ax.set_xlabel("Category")
 ax.set_ylabel("Values")
 
@@ -40,15 +39,15 @@ st.header("LSEPI Considerations")
 st.subheader("Ethical")
 st.write("""
 There is a risk that users may misinterpret trends and assume relationships imply causation. 
-The dataset may oversimplify complex real-world behaviour, leading to misleading conclusions.
+The dataset may oversimplify real-world behaviour, leading to misleading conclusions.
 """)
 
-st.write("**Mitigation:** Clear notes were added stating that the visualisations show correlations only, not causation.")
+st.write("**Mitigation:** Added clear notes explaining that results show correlations only, not causation.")
 
 st.subheader("Professional")
 st.write("""
-Users may misinterpret outputs due to limited context or misunderstanding of filter effects. 
-Different selections can lead to inconsistent interpretations across users.
+Users may misinterpret outputs due to limited context or misunderstanding of filters. 
+Different selections may lead to inconsistent interpretations.
 """)
 
-st.write("**Mitigation:** Labels and explanatory notes were included to explain how filters affect results and interpretation.")
+st.write("**Mitigation:** Labels and explanations were added to clarify how filters affect results.")
