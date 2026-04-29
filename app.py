@@ -1,3 +1,38 @@
+import streamlit as st
+import pandas as pd
+
+# -------------------------------
+# Title
+# -------------------------------
+st.title("Data Dashboard")
+
+# -------------------------------
+# Load Data
+# -------------------------------
+try:
+    df = pd.read_csv("data.csv")
+    st.subheader("Dataset Preview")
+    st.write(df.head())
+except:
+    st.warning("Dataset not found. Please upload or check file name.")
+
+# -------------------------------
+# Example Visualisation
+# -------------------------------
+if 'df' in locals():
+    st.subheader("Basic Visualisation")
+
+    numeric_cols = df.select_dtypes(include='number').columns
+
+    if len(numeric_cols) > 0:
+        selected_col = st.selectbox("Select a column", numeric_cols)
+        st.line_chart(df[selected_col])
+    else:
+        st.write("No numeric columns available for charting.")
+
+# -------------------------------
+# LSEPI SECTION
+# -------------------------------
 st.header("LSEPI Considerations")
 
 st.subheader("Ethical")
